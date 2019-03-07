@@ -2,6 +2,7 @@
 using System.Linq;
 using DateflixMVC.Hubs;
 using DateflixMVC.Models;
+using DateflixMVC.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,12 @@ namespace DateflixMVC.Controllers
 {
     public class LoginController : Controller
     {
+        private IUserService _userService;
+        public LoginController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         public IActionResult Index()
         {
             
@@ -21,15 +28,25 @@ namespace DateflixMVC.Controllers
             return View();
         }
 
-        public IActionResult Login(string username)
+        public IActionResult Login(string username, string password)
         {
-            if (PrivateChatHub.ConnectedUsers.Any(x => x.UserName != username && username != ""))
+            var user = _userService.Authenticate(username, password);
+
+            if (user == null)
             {
-                HttpContext.Session.SetString("Username", username);
-                return RedirectToAction("Index", "PrivateChat");
+                return Content("Error");
             }
 
-            return Content("Error");
+            HttpContext.Session.SetString("Username", user.Username);
+
+            return Content("OK");
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("Username");
+
+            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

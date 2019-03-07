@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DateflixMVC.Extensions;
 using DateflixMVC.Models.SignalR;
+using DateflixMVC.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace DateflixMVC.Hubs
@@ -14,20 +16,54 @@ namespace DateflixMVC.Hubs
         public static List<MessageDetail> CurrentMessage = new List<MessageDetail>();
         #endregion
 
+        private IUserService _userService;
+
+        public PrivateChatHub(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         public override Task OnConnectedAsync() // Called when a new connection is connected to the hub
         {
             return Clients.Client(Context.ConnectionId).SendCoreAsync("SetConnectionId", new object[] {Context.ConnectionId});
         }
 
-        public Task AddUserList(string userName, string connectionId)
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            var connectionId = Context.ConnectionId;
+            ConnectedUsers.RemoveUser(connectionId);
+            return base.OnDisconnectedAsync(exception);
+        }
+
+        public void SendMessage(string username, string message, string toConnectionId, string fromConnectionId)
+        {
+            Clients.Clients(toConnectionId).SendCoreAsync("ReceiveMessage", new object[] { username, message, fromConnectionId });
+        }
+
+        public async Task AddUserList(string username, string connectionId)
         {
             ConnectedUsers.Add(new UserDetail()
             {
                 ConnectionId = connectionId,
-                UserName = userName
+                Username = username
             });
 
-            return Clients.All.SendCoreAsync("SetList", new object[] {ConnectedUsers});
+            //await Clients.All.SendCoreAsync("SetList", new object[] {ConnectedUsers});
+        }
+
+        public string GetConnectionId()
+        {
+            return Context.ConnectionId;
+        }
+
+        public void GetConnectionIdFromUsername(string username, string senderConnectionId)
+        {
+            var user = ConnectedUsers.FirstOrDefault(x => x.Username == username);
+            if (user?.Username != null)
+            {
+                Clients.Clients(senderConnectionId)
+                    .SendCoreAsync("ReceiveConnectionIdFromUsername", new object[] {user.ConnectionId});
+            }
         }
     }
 }

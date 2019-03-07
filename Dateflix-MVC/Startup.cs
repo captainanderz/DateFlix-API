@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Dateflix.Hubs;
 using DateflixMVC.Helpers;
@@ -63,11 +64,20 @@ namespace DateflixMVC
 
             services.AddSignalR();
 
+            services.AddSession(option =>
+            {
+                option.IdleTimeout = TimeSpan.FromDays(1);
+                option.Cookie.HttpOnly = true;
+            });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options => {
                 // In Many-to-Many relationships, when a reference loop occurs ( A json child refenreces a parent ),
                 // the serializer will skip the reference
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+
+            services.AddHttpContextAccessor();
+            services.AddTransient<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,6 +96,7 @@ namespace DateflixMVC
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
             
             app.UseCors(x => x
                 .AllowAnyOrigin()

@@ -1,9 +1,10 @@
 ﻿<script>
     $(document).ready(function () {
         $("#btnSubmit").click(function () {
-            $.post("/Login",
+            $.post("/Login/Login",
                 {
                     username: $("#userName").val(),
+                    password: $('#password').val()
                 }, function (result) {
                     if (result != "Error") {
                         location.href = "/PrivateChat";
@@ -29,6 +30,8 @@
             <div class="form-login">
                 <h3>Private chat test</h3>
                 <input type="text" id="userName" class="form-control input-sm chat-input" placeholder="Username" onkeydown="pushEnter(event)" />
+                <br />
+                <input type="text" id="password" class="form-control input-sm chat-input" placeholder="Password" onkeydown="pushEnter(event)" />
                 <br />
                 <div class="wrapper">
                     <span class="group-btn">

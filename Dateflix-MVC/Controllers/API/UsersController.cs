@@ -39,7 +39,9 @@ namespace DateflixMVC.Controllers.API
         {
             var user = _userService.Authenticate(userDto.Username, userDto.Password);
             if (user == null)
+            {
                 return BadRequest(new { message = "Username or password is incorrect" });
+            }
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -69,6 +71,14 @@ namespace DateflixMVC.Controllers.API
             return Ok(userInfoWithToken);
         }
 
+        [HttpGet]
+        public IActionResult Logout(int id)
+        {
+            
+
+            return Ok();
+        }
+
         [AllowAnonymous]
         [HttpPost("register")]
         public IActionResult Register([FromBody]UserDto userDto)
@@ -79,9 +89,9 @@ namespace DateflixMVC.Controllers.API
             return Ok();
         }
 
-        [HttpGet]
+
+        [HttpGet("getall")]
         //[Authorize(Roles = "Captain")]
-        [AllowAnonymous]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
@@ -90,11 +100,16 @@ namespace DateflixMVC.Controllers.API
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);
             var userDto = _mapper.Map<UserDto>(user);
+
+            if (userDto == null)
+            {
+                return NotFound();
+            }
+
             return Ok(userDto);
         }
 

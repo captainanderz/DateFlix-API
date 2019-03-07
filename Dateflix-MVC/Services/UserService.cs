@@ -1,22 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace DateflixMVC.Services
 {
     public class UserService : IUserService
     {
         private WebApiDbContext _context;
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(WebApiDbContext context)
+        public UserService(WebApiDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public User Authenticate(string username, string password)
@@ -49,6 +54,7 @@ namespace DateflixMVC.Services
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
+            user.CreatedDate = DateTime.UtcNow;
 
             _context.Users.Add(user);
             _context.SaveChanges();
@@ -76,6 +82,11 @@ namespace DateflixMVC.Services
             return _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
         }
 
+        public User GetByUsername(string username)
+        {
+            return _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Username == username);
+        }
+
         public void Update(User user, string password = null)
         {
             var userInDb = _context.Users.Find(user.Id);
@@ -87,12 +98,20 @@ namespace DateflixMVC.Services
             {
                 // username changed, checking for availability
                 if (_context.Users.Any(x => x.Username == user.Username))
+                {
                     throw new AppException("Username " + user.Username + " is already taken");
+                }
             }
 
             userInDb.FirstName = user.FirstName;
             userInDb.LastName = user.LastName;
             userInDb.Username = user.Username;
+            userInDb.Birthday = user.Birthday;
+            userInDb.City = user.City;
+            userInDb.ProfilePictures = user.ProfilePictures;
+            userInDb.Gender = user.Gender;
+            userInDb.UpdatedDate = DateTime.UtcNow;
+            userInDb.Description = user.Description;
 
             if (!string.IsNullOrWhiteSpace(password))
             {

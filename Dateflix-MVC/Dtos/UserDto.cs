@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DateflixMVC.Dtos
 {
@@ -13,5 +11,10 @@ namespace DateflixMVC.Dtos
         public string Username { get; set; }
         public string Password { get; set; }
         public List<RoleUserDto> Roles { get; set; }
+        public DateTime Birthday { get; set; }
+        public string[] ProfilePictures { get; set; }
+        public string City { get; set; }
+        public Gender Gender { get; set; }
+        public string Description { get; set; }
     }
 }

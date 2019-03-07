@@ -1,4 +1,5 @@
-﻿using DateflixMVC.Models.Profile;
+﻿using System;
+using DateflixMVC.Models.Profile;
 using Microsoft.EntityFrameworkCore;
 
 namespace DateflixMVC.Helpers
@@ -13,6 +14,10 @@ namespace DateflixMVC.Helpers
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>().Property(x => x.ProfilePictures).HasConversion(
+                v => string.Join(',', v),
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
             base.OnModelCreating(modelBuilder);
         }
     }
