@@ -1,30 +1,31 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DateflixMVC.Services
 {
     public class UserService : IUserService
     {
         private WebApiDbContext _context;
-        private IHttpContextAccessor _httpContextAccessor;
+        private readonly AppSettings _appSettings;
 
-        public UserService(WebApiDbContext context, IHttpContextAccessor httpContextAccessor)
+        public UserService(WebApiDbContext context, IOptions<AppSettings> appSettings)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
+            _appSettings = appSettings.Value;
         }
 
-        public User Authenticate(string username, string password)
+        public UserDto Authenticate(string username, string password)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return null;
@@ -37,8 +38,30 @@ namespace DateflixMVC.Services
             if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
                 return null;
 
-            // Authentication successful
-            return user;
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            //var userAndRolesClaims = new List<Claim>
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(GetUserClaims(user)),
+                SigningCredentials = new SigningCredentials
+                (
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature
+                )
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+            
+            return new UserDto()
+            {
+                Id = user.Id,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Token = tokenString
+            };
         }
 
         public User Create(User user, string password)
@@ -133,8 +156,11 @@ namespace DateflixMVC.Services
                 return null;
             }
 
-            var claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Name, user.Id.ToString())); // Add claim for user's id
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Id.ToString())
+            };
+            // Add claim for user's id
 
             // Add claim for each of the users roles
             foreach (var roleUser in user.Roles)
@@ -145,7 +171,7 @@ namespace DateflixMVC.Services
             return claims;
         }
 
-        //helper methods
+        #region Private helpers
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -183,5 +209,7 @@ namespace DateflixMVC.Services
             }
             return true;
         }
+
+        #endregion
     }
 }

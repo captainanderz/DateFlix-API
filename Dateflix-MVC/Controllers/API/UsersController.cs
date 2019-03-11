@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using AutoMapper;
 using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
@@ -13,11 +7,10 @@ using DateflixMVC.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace DateflixMVC.Controllers.API
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : Controller
@@ -43,32 +36,7 @@ namespace DateflixMVC.Controllers.API
                 return BadRequest(new { message = "Username or password is incorrect" });
             }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            //var userAndRolesClaims = new List<Claim>
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(_userService.GetUserClaims(user)),
-                Expires = DateTime.Now.AddDays(7),
-                SigningCredentials = new SigningCredentials
-                (
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature
-                )
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-            var userInfoWithToken = new
-            {
-                // Inferred member names from the users properties
-                user.Id,
-                user.Username,
-                user.FirstName,
-                user.LastName,
-                Token = tokenString
-            };
-            return Ok(userInfoWithToken);
+            return Ok(user);
         }
 
         [HttpGet]

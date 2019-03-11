@@ -78,6 +78,7 @@ namespace DateflixMVC
 
             services.AddHttpContextAccessor();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IMessageService, MessagesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,6 +114,9 @@ namespace DateflixMVC
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=login}/{action=Index}/{id?}");
+                routes.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new { controller = "Home", action = "Index" });
             });
         }
 

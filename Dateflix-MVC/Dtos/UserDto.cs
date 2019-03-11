@@ -16,5 +16,6 @@ namespace DateflixMVC.Dtos
         public string City { get; set; }
         public Gender Gender { get; set; }
         public string Description { get; set; }
+        public string Token { get; set; }
     }
 }

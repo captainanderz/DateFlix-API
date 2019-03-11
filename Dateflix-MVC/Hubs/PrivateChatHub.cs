@@ -17,15 +17,17 @@ namespace DateflixMVC.Hubs
         #endregion
 
         private IUserService _userService;
+        private IMessageService _messageService;
 
-        public PrivateChatHub(IUserService userService)
+        public PrivateChatHub(IUserService userService, IMessageService messageService)
         {
             _userService = userService;
+            _messageService = messageService;
         }
 
         public override Task OnConnectedAsync() // Called when a new connection is connected to the hub
         {
-            return Clients.Client(Context.ConnectionId).SendCoreAsync("SetConnectionId", new object[] {Context.ConnectionId});
+            return Clients.Client(Context.ConnectionId).SendCoreAsync("SetConnectionId", new object[] { Context.ConnectionId });
         }
 
         public override Task OnDisconnectedAsync(Exception exception)
@@ -35,9 +37,12 @@ namespace DateflixMVC.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public void SendMessage(string username, string message, string toConnectionId, string fromConnectionId)
+        public void SendMessage(string username, string message, string receiverId, string senderId)
         {
-            Clients.Clients(toConnectionId).SendCoreAsync("ReceiveMessage", new object[] { username, message, fromConnectionId });
+            Clients.Clients(receiverId).SendCoreAsync("ReceiveMessage", new object[] { username, message, senderId });
+
+            // Save message to DB
+            _messageService.SaveMessage(senderId, receiverId, message);
         }
 
         public async Task AddUserList(string username, string connectionId)
@@ -62,7 +67,7 @@ namespace DateflixMVC.Hubs
             if (user?.Username != null)
             {
                 Clients.Clients(senderConnectionId)
-                    .SendCoreAsync("ReceiveConnectionIdFromUsername", new object[] {user.ConnectionId});
+                    .SendCoreAsync("ReceiveConnectionIdFromUsername", new object[] { user.ConnectionId });
             }
         }
     }

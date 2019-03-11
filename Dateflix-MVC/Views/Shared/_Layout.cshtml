@@ -30,19 +30,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Login" asp-action="Index" class="navbar-brand">Dateflix MVC</a>
+                <a asp-area="" asp-controller="Login" asp-action="Index" class="navbar-brand">Dateflix API</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Login" asp-action="Index">Login</a></li>
-                    <li><a asp-area="" asp-controller="Test" asp-action="Index">Test</a></li>
                     <li><a asp-area="" asp-controller="PrivateChat" asp-action="Index">Private chat</a></li>
-                    <li><a asp-area="" asp-controller="PrivateChat" asp-action="TestOne">TestOne</a></li>
-                    @if (Context.Session.GetString("Username") != null)
-                    {
-                        <li><a asp-area="" asp-controller="PrivateChat" asp-action="TestTwo">TestTwo</a></li>
-                        <li><a asp-area="" asp-controller="Login" asp-action="Logout">Logout</a></li>
-                    }
+                    <li><a asp-area="" asp-controller="PrivateChat" asp-action="TestTwo">TestTwo</a></li>
                 </ul>
             </div>
         </div>
