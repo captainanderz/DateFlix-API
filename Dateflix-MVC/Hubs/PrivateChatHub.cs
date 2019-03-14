@@ -44,7 +44,10 @@ namespace DateflixMVC.Hubs
                 receiverConnectionId = GetConnectionIdFromUsername(receiverUsername);
             }
 
-            await Clients.Clients(receiverConnectionId).SendCoreAsync("ReceiveMessage", new object[] { username, message, senderConnectionId });
+            if (receiverConnectionId != null)
+            {
+                await Clients.Clients(receiverConnectionId).SendCoreAsync("ReceiveMessage", new object[] { username, message, senderConnectionId });
+            }
 
             // Save message to DB
             await _messageService.SaveMessage(username, receiverUsername, message);
@@ -81,7 +84,7 @@ namespace DateflixMVC.Hubs
                     .SendCoreAsync("ReceiveConnectionIdFromUsername", new object[] { user.ConnectionId });
             }
 
-            return user.ConnectionId;
+            return user?.ConnectionId;
         }
     }
 }
