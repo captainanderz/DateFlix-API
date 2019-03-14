@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
@@ -101,9 +102,10 @@ namespace DateflixMVC.Services
             return _context.Users;
         }
 
-        public User GetById(int id)
+        public async Task<User> GetByIdAsync(int id)
         {
-            return _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
+            //return await _context.Users.FindAsync(id);
+            return _context.Users.AsQueryable().Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
         }
 
         public User GetByUsername(string username)

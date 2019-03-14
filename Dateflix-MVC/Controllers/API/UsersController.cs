@@ -70,7 +70,7 @@ namespace DateflixMVC.Controllers.API
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = _userService.GetById(id);
+            var user = _userService.GetByIdAsync(id);
             var userDto = _mapper.Map<UserDto>(user);
 
             if (userDto == null)

@@ -18,6 +18,10 @@ namespace DateflixMVC.Helpers
             // RoleUser map
             CreateMap<RolerUser, RoleUserDto>();
             CreateMap<RoleUserDto, RolerUser>();
+
+            // Likes map
+            CreateMap<LikeDto, Likes>();
+            CreateMap<Likes, LikeDto>();
         }
     }
 }

@@ -135,7 +135,7 @@ namespace DateflixMVC
                     {
                         var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
                         var userId = int.Parse(context.Principal.Identity.Name);
-                        var user = userService.GetById(userId);
+                        var user = userService.GetByIdAsync(userId);
                         if (user == null)
                             context.Fail("Unauthorized"); // if user no longer exists, return unauthorized
 

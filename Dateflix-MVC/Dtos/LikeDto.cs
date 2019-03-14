@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace DateflixMVC.Models.Profile
+namespace DateflixMVC.Dtos
 {
-    public class Likes
+    public class LikeDto
     {
         public int Id { get; set; }
         public int UserId { get; set; }

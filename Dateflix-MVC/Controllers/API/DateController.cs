@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using DateflixMVC.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
+using DateflixMVC.Services;
 using Microsoft.AspNetCore.Authorization;
 
 namespace DateflixMVC.Controllers.API
@@ -17,10 +20,14 @@ namespace DateflixMVC.Controllers.API
     public class DateController : ControllerBase
     {
         private readonly WebApiDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
-        public DateController(WebApiDbContext context)
+        public DateController(WebApiDbContext context, IMapper mapper, IUserService userService)
         {
             _context = context;
+            _mapper = mapper;
+            _userService = userService;
         }
 
         // GET: api/Date
@@ -28,6 +35,70 @@ namespace DateflixMVC.Controllers.API
         public async Task<ActionResult<IEnumerable<Likes>>> GetLikes()
         {
             return await _context.Likes.ToListAsync();
+        }
+
+        [HttpPost("like")]
+        public ActionResult Like([FromBody]LikeDto likeDto)
+        {
+            if (likeDto == null)
+            {
+                return BadRequest();
+            }
+
+            var like = new LikeDto()
+            {
+                UserId = likeDto.UserId,
+                LikedId = likeDto.LikedId,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var likesEntry = _context.Likes.Add(_mapper.Map<Likes>(like));
+            _context.SaveChanges();
+            var match = _context.Likes.AsQueryable().FirstOrDefault(x => x.UserId == like.LikedId && x.LikedId == like.UserId);
+
+            if (match != null)
+            {
+                return Content("Match");
+            }
+
+            return likesEntry == null ? StatusCode(500) : Ok();
+        }
+
+        [HttpGet("matches")]
+        public ActionResult GetMatches(int userId)
+        {
+            var userLiked = _context.Likes.AsQueryable().Where(x => x.UserId == userId).ToList();
+            var likedUser = _context.Likes.AsQueryable().Where(x => x.LikedId == userId).ToList();
+
+            var matchedUserIds = new List<int>();
+            foreach (var like in userLiked)
+            {
+                if (likedUser.Any(x => x.UserId == like.LikedId))
+                {
+                    matchedUserIds.Add(like.LikedId);
+                }
+            }
+
+            var likedUsers = new List<User>();
+
+            foreach (var matchedUserId in matchedUserIds)
+            {
+                var user = _userService.GetByIdAsync(matchedUserId);
+                if (user != null)
+                {
+                    likedUsers.Add(user.Result);
+                }
+            }
+            //Parallel.ForEach(matchedUserIds, async (matchedUserId) =>
+            //{
+            //    var user = await _userService.GetByIdAsync(matchedUserId);
+            //    if (user != null)
+            //    {
+            //        likedUsers.Add(user);
+            //    }
+            //});
+
+            return Ok(likedUsers);
         }
 
         // GET: api/Date/5
