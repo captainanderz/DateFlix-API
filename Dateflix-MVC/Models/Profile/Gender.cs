@@ -1,4 +1,4 @@
-﻿namespace DateflixMVC.Dtos
+﻿namespace DateflixMVC.Models.Profile
 {
     public enum Gender
     {

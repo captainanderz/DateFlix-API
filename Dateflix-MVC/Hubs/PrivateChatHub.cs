@@ -37,15 +37,26 @@ namespace DateflixMVC.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public void SendMessage(string username, string message, string receiverId, string senderId)
+        public async Task SendMessage(string message, string username, string senderConnectionId, string receiverConnectionId, string receiverUsername = null)
         {
-            Clients.Clients(receiverId).SendCoreAsync("ReceiveMessage", new object[] { username, message, senderId });
+            if (string.IsNullOrWhiteSpace(receiverConnectionId))
+            {
+                receiverConnectionId = GetConnectionIdFromUsername(receiverUsername);
+            }
+
+            await Clients.Clients(receiverConnectionId).SendCoreAsync("ReceiveMessage", new object[] { username, message, senderConnectionId });
 
             // Save message to DB
-            _messageService.SaveMessage(senderId, receiverId, message);
+            await _messageService.SaveMessage(username, receiverUsername, message);
         }
 
-        public async Task AddUserList(string username, string connectionId)
+        public async Task GetMessages(string senderUsername, string senderConnectionId, string receiverUsername)
+        {
+            var messages = _messageService.GetMessages(senderUsername, receiverUsername);
+            await Clients.Clients(senderConnectionId).SendCoreAsync("GetMessages", new object[] {messages});
+        }
+
+        public void AddUserList(string username, string connectionId)
         {
             ConnectedUsers.Add(new UserDetail()
             {
@@ -61,14 +72,16 @@ namespace DateflixMVC.Hubs
             return Context.ConnectionId;
         }
 
-        public void GetConnectionIdFromUsername(string username, string senderConnectionId)
+        public string GetConnectionIdFromUsername(string username, string senderConnectionId = null)
         {
             var user = ConnectedUsers.FirstOrDefault(x => x.Username == username);
-            if (user?.Username != null)
+            if (user?.Username != null && senderConnectionId != null)
             {
                 Clients.Clients(senderConnectionId)
                     .SendCoreAsync("ReceiveConnectionIdFromUsername", new object[] { user.ConnectionId });
             }
+
+            return user.ConnectionId;
         }
     }
 }
