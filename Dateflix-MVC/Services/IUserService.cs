@@ -14,6 +14,7 @@ namespace DateflixMVC.Services
         User GetByUsername(string username);
         User Create(User user, string password);
         void Update(User user, string password = null);
+        bool UpdateUserPreference(int id, UserPreference userPreference);
         void Delete(int id);
         IEnumerable<Claim> GetUserClaims(User user);
     }

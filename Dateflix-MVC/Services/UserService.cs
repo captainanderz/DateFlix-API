@@ -31,7 +31,7 @@ namespace DateflixMVC.Services
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 return null;
 
-            var user = _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).SingleOrDefault(u => u.Username == username);
+            var user = _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).SingleOrDefault(u => u.Email == username);
 
             if (user == null)
                 return null;
@@ -59,7 +59,7 @@ namespace DateflixMVC.Services
             return new UserDto()
             {
                 Id = user.Id,
-                Username = user.Username,
+                Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Token = tokenString
@@ -71,8 +71,8 @@ namespace DateflixMVC.Services
             // Validation..
             if (string.IsNullOrWhiteSpace(password))
                 throw new AppException("Password is required");
-            if (_context.Users.Any(x => x.Username == user.Username))
-                throw new AppException("Username " + user.Username + " is already taken");
+            if (_context.Users.Any(x => x.Email == user.Email))
+                throw new AppException("Email " + user.Email + " is already taken");
 
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
@@ -102,6 +102,11 @@ namespace DateflixMVC.Services
             return _context.Users;
         }
 
+        public User GetById(int id)
+        {
+            return _context.Users.AsQueryable().Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
+        }
+
         public async Task<User> GetByIdAsync(int id)
         {
             //return await _context.Users.FindAsync(id);
@@ -110,7 +115,7 @@ namespace DateflixMVC.Services
 
         public User GetByUsername(string username)
         {
-            return _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Username == username);
+            return _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Email == username);
         }
 
         public void Update(User user, string password = null)
@@ -118,20 +123,22 @@ namespace DateflixMVC.Services
             var userInDb = _context.Users.Find(user.Id);
 
             if (userInDb == null)
+            {
                 throw new AppException("User not found");
+            }
 
-            if (user.Username != userInDb.Username)
+            if (user.Email != userInDb.Email)
             {
                 // username changed, checking for availability
-                if (_context.Users.Any(x => x.Username == user.Username))
+                if (_context.Users.Any(x => x.Email == user.Email))
                 {
-                    throw new AppException("Username " + user.Username + " is already taken");
+                    throw new AppException("Email " + user.Email + " is already taken");
                 }
             }
 
             userInDb.FirstName = user.FirstName;
             userInDb.LastName = user.LastName;
-            userInDb.Username = user.Username;
+            userInDb.Email = user.Email;
             userInDb.Birthday = user.Birthday;
             userInDb.City = user.City;
             userInDb.ProfilePictures = user.ProfilePictures;
@@ -149,6 +156,23 @@ namespace DateflixMVC.Services
             }
             _context.Users.Update(userInDb);
             _context.SaveChanges();
+        }
+
+        public bool UpdateUserPreference(int id, UserPreference userPreference)
+        {
+            var userInDb = GetById(id);
+
+            if (userInDb == null)
+            {
+                return false;
+            }
+
+            userInDb.UserPreference = userPreference;
+
+            _context.Users.Update(userInDb);
+            _context.SaveChanges();
+
+            return true;
         }
 
         // generates and returns an IEnumerable of claims including the all of the user's roles and their Id.

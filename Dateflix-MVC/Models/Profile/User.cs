@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DateflixMVC.Dtos;
+using DateflixMVC.Helpers;
 
 namespace DateflixMVC.Models.Profile
 {
@@ -9,7 +10,7 @@ namespace DateflixMVC.Models.Profile
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Username { get; set; }
+        public string Email { get; set; }
         public List<RolerUser> Roles { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
@@ -24,5 +25,6 @@ namespace DateflixMVC.Models.Profile
         public List<Blocks> Blocks { get; set; }
         public List<Likes> Likes { get; set; }
         public List<DirectMessages> DirectMessages { get; set; }
+        public UserPreference UserPreference { get; set; }
     }
 }

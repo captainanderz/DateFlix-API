@@ -31,7 +31,7 @@
 
     connection.on('SetConnectionId', data => {
         $("#hdnConnectionID").val(data);
-        $("#hdnUserName").val('@Context.Session.GetString("Username")'); // User username
+        $("#hdnUserName").val('@Context.Session.GetString("Email")'); // User username
         console.log($("#hdnUserName").val());
         console.log("ConnectionID : "+data);
                 

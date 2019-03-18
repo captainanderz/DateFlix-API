@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DateflixMVC.Helpers;
+using DateflixMVC.Models;
 using DateflixMVC.Models.Profile;
 using DateflixMVC.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -30,13 +31,14 @@ namespace DateflixMVC.Controllers.API
             _userService = userService;
         }
 
-        // GET: api/Date
-        [HttpGet]
+        // GET: api/date
+        [HttpGet("getAll")]
         public async Task<ActionResult<IEnumerable<Likes>>> GetLikes()
         {
             return await _context.Likes.ToListAsync();
         }
 
+        //POST: api/date/like
         [HttpPost("like")]
         public ActionResult Like([FromBody]LikeDto likeDto)
         {
@@ -45,25 +47,28 @@ namespace DateflixMVC.Controllers.API
                 return BadRequest();
             }
 
-            var like = new LikeDto()
-            {
-                UserId = likeDto.UserId,
-                LikedId = likeDto.LikedId,
-                CreatedDate = DateTime.UtcNow
-            };
+            likeDto.CreatedDate = DateTime.UtcNow;
 
-            var likesEntry = _context.Likes.Add(_mapper.Map<Likes>(like));
+            var existingMatch = _context.Likes.AsQueryable().Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
+
+            if (existingMatch.Any())
+            {
+                return Ok();
+            }
+
+            var likesEntry = _context.Likes.Add(_mapper.Map<Likes>(likeDto));
             _context.SaveChanges();
-            var match = _context.Likes.AsQueryable().FirstOrDefault(x => x.UserId == like.LikedId && x.LikedId == like.UserId);
+            var match = _context.Likes.AsQueryable().FirstOrDefault(x => x.UserId == likeDto.LikedId && x.LikedId == likeDto.UserId);
 
             if (match != null)
             {
-                return Content("Match");
+                return Ok(true);
             }
 
             return likesEntry == null ? StatusCode(500) : Ok();
         }
 
+        //GET: api/date/matches
         [HttpGet("matches")]
         public ActionResult GetMatches(int userId)
         {
@@ -89,14 +94,6 @@ namespace DateflixMVC.Controllers.API
                     likedUsers.Add(user.Result);
                 }
             }
-            //Parallel.ForEach(matchedUserIds, async (matchedUserId) =>
-            //{
-            //    var user = await _userService.GetByIdAsync(matchedUserId);
-            //    if (user != null)
-            //    {
-            //        likedUsers.Add(user);
-            //    }
-            //});
 
             return Ok(likedUsers);
         }
@@ -115,65 +112,24 @@ namespace DateflixMVC.Controllers.API
             return likes;
         }
 
-        // PUT: api/Date/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLikes(int id, Likes likes)
+        //GET: api/date/block
+        [HttpGet("block")]
+        public async Task<ActionResult> Block([FromBody]BlockDto blockDto)
         {
-            if (id != likes.Id)
+            if (blockDto == null)
             {
                 return BadRequest();
             }
 
-            _context.Entry(likes).State = EntityState.Modified;
-
-            try
+            var existingBlock = _context.Blocks.AsQueryable().FirstOrDefault(x => x.UserId == blockDto.UserId && x.BlockedUserId == blockDto.BlockedUserId);
+            if (existingBlock != null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LikesExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return Ok(existingBlock);
             }
 
-            return NoContent();
-        }
+            await _context.Blocks.AddAsync(_mapper.Map<Blocks>(blockDto));
 
-        // POST: api/Date
-        [HttpPost]
-        public async Task<ActionResult<Likes>> PostLikes(Likes likes)
-        {
-            _context.Likes.Add(likes);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetLikes", new { id = likes.Id }, likes);
-        }
-
-        // DELETE: api/Date/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Likes>> DeleteLikes(int id)
-        {
-            var likes = await _context.Likes.FindAsync(id);
-            if (likes == null)
-            {
-                return NotFound();
-            }
-
-            _context.Likes.Remove(likes);
-            await _context.SaveChangesAsync();
-
-            return likes;
-        }
-
-        private bool LikesExists(int id)
-        {
-            return _context.Likes.Any(e => e.Id == id);
+            return Ok();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DateflixMVC.Dtos;
+using DateflixMVC.Models;
 using DateflixMVC.Models.Profile;
 
 namespace DateflixMVC.Helpers
@@ -22,6 +23,18 @@ namespace DateflixMVC.Helpers
             // Likes map
             CreateMap<LikeDto, Likes>();
             CreateMap<Likes, LikeDto>();
+
+            // Blocks map
+            CreateMap<BlockDto, Blocks>();
+            CreateMap<Blocks, BlockDto>();
+
+            // Bans map
+            CreateMap<Bans, BanDto>();
+            CreateMap<BanDto, Bans>();
+
+            // UserPreference map
+            CreateMap<UserPreference, UserPreferenceDto>();
+            CreateMap<UserPreferenceDto, UserPreference>();
         }
     }
 }

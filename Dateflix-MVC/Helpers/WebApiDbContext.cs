@@ -18,6 +18,7 @@ namespace DateflixMVC.Helpers
         public DbSet<ActiveLogins> ActiveLogins { get; set; }
         public DbSet<DirectMessages> DirrectMessages { get; set; }
         public DbSet<Likes> Likes { get; set; }
+        public DbSet<UserPreference> UserPreference { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

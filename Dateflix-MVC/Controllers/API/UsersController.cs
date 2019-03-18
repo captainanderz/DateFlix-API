@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
@@ -30,10 +31,10 @@ namespace DateflixMVC.Controllers.API
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]UserDto userDto)
         {
-            var user = _userService.Authenticate(userDto.Username, userDto.Password);
+            var user = _userService.Authenticate(userDto.Email, userDto.Password);
             if (user == null)
             {
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return BadRequest(new { message = "Email or password is incorrect" });
             }
 
             return Ok(user);
@@ -51,10 +52,10 @@ namespace DateflixMVC.Controllers.API
         [HttpPost("register")]
         public IActionResult Register([FromBody]UserDto userDto)
         {
-            var user = _mapper.Map<User>(userDto);
+            var mappedUser = _mapper.Map<User>(userDto);
             
-            _userService.Create(user, userDto.Password);
-            return Ok();
+            var user = _userService.Create(mappedUser, userDto.Password);
+            return Ok(user);
         }
 
 
@@ -67,10 +68,11 @@ namespace DateflixMVC.Controllers.API
             return Ok(userDtos);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var user = _userService.GetByIdAsync(id);
+            var user = await _userService.GetByIdAsync(id);
             var userDto = _mapper.Map<UserDto>(user);
 
             if (userDto == null)
@@ -81,7 +83,7 @@ namespace DateflixMVC.Controllers.API
             return Ok(userDto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPost("{id}")]
         public IActionResult Update(int id, [FromBody]UserDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
@@ -94,6 +96,15 @@ namespace DateflixMVC.Controllers.API
 
             _userService.Update(user, userDto.Password);
             return Ok();
+        }
+
+        [HttpPost("{id}")]
+        public IActionResult UpdateUserPreference(int id, [FromBody] UserPreferenceDto userPreferenceDto)
+        {
+            var userPreference = _mapper.Map<UserPreference>(userPreferenceDto);
+            var result = _userService.UpdateUserPreference(id, userPreference);
+
+            return result ? Ok() : StatusCode(500);
         }
 
         [HttpDelete("{id}")]

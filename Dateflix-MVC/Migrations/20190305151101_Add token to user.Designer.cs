@@ -73,7 +73,7 @@ namespace DateflixMVC.Migrations
 
                     b.Property<DateTime?>("UpdatedDate");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("Email");
 
                     b.HasKey("Id");
 

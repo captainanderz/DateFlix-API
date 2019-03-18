@@ -24,8 +24,8 @@ namespace DateflixMVC.Services
                 return;
             }
 
-            var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Username == senderUsername);
-            var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Username == receiverUsername);
+            var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == senderUsername);
+            var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == receiverUsername);
 
             if (senderUser == null || receiverUser == null)
             {
@@ -58,8 +58,8 @@ namespace DateflixMVC.Services
         {
             if (senderId == null || receiverId == null)
             {
-                var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Username == senderUsername);
-                var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Username == receiverUsername);
+                var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == senderUsername);
+                var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == receiverUsername);
 
                 if (senderUser == null || receiverUser == null)
                 {

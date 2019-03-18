@@ -37,14 +37,14 @@ namespace DateflixMVC.Controllers
                 return Content("Error");
             }
 
-            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetString("Email", user.Email);
 
             return Content("OK");
         }
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Remove("Username");
+            HttpContext.Session.Remove("Email");
 
             return RedirectToAction("Index");
         }
