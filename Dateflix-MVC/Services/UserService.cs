@@ -97,25 +97,25 @@ namespace DateflixMVC.Services
             }
         }
 
-        public IEnumerable<User> GetAll()
+        public List<User> GetAll()
         {
-            return _context.Users;
+            return _context.Users.AsQueryable().Include(x => x.UserPreference).Include(x => x.Likes).ToList();
         }
 
         public User GetById(int id)
         {
-            return _context.Users.AsQueryable().Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
+            return _context.Users.AsQueryable().Include(x => x.UserPreference).Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
         }
 
         public async Task<User> GetByIdAsync(int id)
         {
             //return await _context.Users.FindAsync(id);
-            return _context.Users.AsQueryable().Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
+            return _context.Users.AsQueryable().Include(x => x.UserPreference).Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
         }
 
         public User GetByUsername(string username)
         {
-            return _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Email == username);
+            return _context.Users.AsQueryable().Include(x => x.UserPreference).Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Email == username);
         }
 
         public void Update(User user, string password = null)
@@ -145,11 +145,11 @@ namespace DateflixMVC.Services
             userInDb.Gender = user.Gender;
             userInDb.UpdatedDate = DateTime.UtcNow;
             userInDb.Description = user.Description;
+            userInDb.UserPreference = user.UserPreference;
 
             if (!string.IsNullOrWhiteSpace(password))
             {
-                byte[] passwordHash, passwordSalt;
-                CreatePasswordHash(password, out passwordHash, out passwordSalt);
+                CreatePasswordHash(password, out var passwordHash, out var passwordSalt);
 
                 userInDb.PasswordHash = passwordHash;
                 userInDb.PasswordSalt = passwordSalt;

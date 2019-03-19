@@ -18,6 +18,7 @@ namespace DateflixMVC.Dtos
         public Gender Gender { get; set; }
         public string Description { get; set; }
         public string Token { get; set; }
+        public List<Likes> Likes { get; set; }
         public UserPreference UserPreference { get; set; }
     }
 }

@@ -64,15 +64,15 @@ namespace DateflixMVC.Controllers.API
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
-            var userDtos = _mapper.Map<IList<UserDto>>(users);
+            var userDtos = _mapper.Map<List<UserDto>>(users);
             return Ok(userDtos);
         }
 
-        [Authorize]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        //[Authorize]
+        [HttpGet("getbyid")]
+        public async Task<IActionResult> GetById(int userId)
         {
-            var user = await _userService.GetByIdAsync(id);
+            var user = await _userService.GetByIdAsync(userId);
             var userDto = _mapper.Map<UserDto>(user);
 
             if (userDto == null)
@@ -83,11 +83,11 @@ namespace DateflixMVC.Controllers.API
             return Ok(userDto);
         }
 
-        [HttpPost("{id}")]
-        public IActionResult Update(int id, [FromBody]UserDto userDto)
+        [HttpPost("update")]
+        public IActionResult Update(int userId, [FromBody]UserDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
-            user.Id = id;
+            user.Id = userId;
 
             if (!ModelState.IsValid)
             {
@@ -98,19 +98,19 @@ namespace DateflixMVC.Controllers.API
             return Ok();
         }
 
-        [HttpPost("{id}")]
-        public IActionResult UpdateUserPreference(int id, [FromBody] UserPreferenceDto userPreferenceDto)
+        [HttpPost("UpdateUserPreference")]
+        public IActionResult UpdateUserPreference(int userId, [FromBody] UserPreferenceDto userPreferenceDto)
         {
             var userPreference = _mapper.Map<UserPreference>(userPreferenceDto);
-            var result = _userService.UpdateUserPreference(id, userPreference);
+            var result = _userService.UpdateUserPreference(userId, userPreference);
 
             return result ? Ok() : StatusCode(500);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpDelete("{userId}")]
+        public IActionResult Delete(int userId)
         {
-            _userService.Delete(id);
+            _userService.Delete(userId);
             return Ok();
         }
 

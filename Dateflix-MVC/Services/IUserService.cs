@@ -9,7 +9,7 @@ namespace DateflixMVC.Services
     public interface IUserService
     {
         UserDto Authenticate(string username, string password);
-        IEnumerable<User> GetAll();
+        List<User> GetAll();
         Task<User> GetByIdAsync(int id);
         User GetByUsername(string username);
         User Create(User user, string password);
@@ -17,5 +17,6 @@ namespace DateflixMVC.Services
         bool UpdateUserPreference(int id, UserPreference userPreference);
         void Delete(int id);
         IEnumerable<Claim> GetUserClaims(User user);
+        User GetById(int id);
     }
 }

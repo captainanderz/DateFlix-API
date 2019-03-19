@@ -4,14 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DateflixMVC.Dtos;
-using Microsoft.AspNetCore.Http;
+using DateflixMVC.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models;
 using DateflixMVC.Models.Profile;
 using DateflixMVC.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DateflixMVC.Controllers.API
 {
@@ -38,9 +37,31 @@ namespace DateflixMVC.Controllers.API
             return await _context.Likes.ToListAsync();
         }
 
+        [HttpGet("getMatchingUsers")]
+        public IActionResult GetMatchingUsers(int userId)
+        {
+            var user = _userService.GetById(userId);
+
+            if (user == null)
+            {
+                return BadRequest("User doesnt exist");
+            }
+
+            var matchingUsers = _userService.GetAll().Where(x => x.Gender == user.UserPreference.Gender && UserPreferenceHelper.IsInsideRange(x.Birthday.ToAge(), user.UserPreference)
+                                                                 && x.UserPreference.Gender == user.Gender && UserPreferenceHelper.IsInsideRange(user.Birthday.ToAge(), x.UserPreference));
+            var usersDto = _mapper.Map<IEnumerable<User>, List<UserDto>>(matchingUsers);
+
+            if (!usersDto.Any())
+            {
+                return Ok("No matching users");
+            }
+
+            return Ok(usersDto);
+        }
+
         //POST: api/date/like
         [HttpPost("like")]
-        public ActionResult Like([FromBody]LikeDto likeDto)
+        public IActionResult Like([FromBody]LikeDto likeDto)
         {
             if (likeDto == null)
             {
@@ -70,7 +91,7 @@ namespace DateflixMVC.Controllers.API
 
         //GET: api/date/matches
         [HttpGet("matches")]
-        public ActionResult GetMatches(int userId)
+        public IActionResult GetMatches(int userId)
         {
             var userLiked = _context.Likes.AsQueryable().Where(x => x.UserId == userId).ToList();
             var likedUser = _context.Likes.AsQueryable().Where(x => x.LikedId == userId).ToList();
@@ -99,10 +120,10 @@ namespace DateflixMVC.Controllers.API
         }
 
         // GET: api/Date/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Likes>> GetLikes(int id)
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<Likes>> GetLikes(int userId)
         {
-            var likes = await _context.Likes.FindAsync(id);
+            var likes = await _context.Likes.FindAsync(userId);
 
             if (likes == null)
             {

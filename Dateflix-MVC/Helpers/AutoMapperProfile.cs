@@ -1,4 +1,5 @@
-﻿using DateflixMVC.Dtos;
+﻿using System.Collections.Generic;
+using DateflixMVC.Dtos;
 using DateflixMVC.Models;
 using DateflixMVC.Models.Profile;
 
@@ -11,6 +12,8 @@ namespace DateflixMVC.Helpers
             // User map
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
+            //CreateMap<List<UserDto>, List<User>>();
+            //CreateMap<List<User>, List<UserDto>>();
 
             // Role map
             CreateMap<Role, RoleDto>();
