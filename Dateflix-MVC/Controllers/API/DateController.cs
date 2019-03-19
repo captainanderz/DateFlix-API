@@ -42,13 +42,13 @@ namespace DateflixMVC.Controllers.API
         {
             var user = _userService.GetById(userId);
 
-            if (user == null)
+            if (user?.UserPreference == null)
             {
-                return BadRequest("User doesnt exist");
+                return BadRequest("User or UserPreference doesnt exist");
             }
 
             var matchingUsers = _userService.GetAll().Where(x => x.Gender == user.UserPreference.Gender && UserPreferenceHelper.IsInsideRange(x.Birthday.ToAge(), user.UserPreference)
-                                                                 && x.UserPreference.Gender == user.Gender && UserPreferenceHelper.IsInsideRange(user.Birthday.ToAge(), x.UserPreference));
+                                                                 && x.UserPreference != null && x.UserPreference.Gender == user.Gender && UserPreferenceHelper.IsInsideRange(user.Birthday.ToAge(), x.UserPreference)).ToList();
             var usersDto = _mapper.Map<IEnumerable<User>, List<UserDto>>(matchingUsers);
 
             if (!usersDto.Any())
