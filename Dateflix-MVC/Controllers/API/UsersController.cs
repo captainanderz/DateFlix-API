@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using AutoMapper;
 using DateflixMVC.Dtos;
@@ -8,6 +9,7 @@ using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
 using DateflixMVC.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -21,12 +23,14 @@ namespace DateflixMVC.Controllers.API
         private IUserService _userService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public UsersController(IUserService userService, IMapper mapper, IOptions<AppSettings> appSettings)
+        public UsersController(IUserService userService, IMapper mapper, IOptions<AppSettings> appSettings, IHostingEnvironment hostingEnvironment)
         {
             _userService = userService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [AllowAnonymous]
@@ -40,14 +44,6 @@ namespace DateflixMVC.Controllers.API
             }
 
             return Ok(user);
-        }
-
-        [HttpGet]
-        public IActionResult Logout(int id)
-        {
-            
-
-            return Ok();
         }
 
         [AllowAnonymous]
@@ -105,21 +101,27 @@ namespace DateflixMVC.Controllers.API
         {
             var user = _mapper.Map<User>(userDto);
             user.Id = userId;
+            var imageFolderPath = Path.Combine(_hostingEnvironment.WebRootPath, "profilePictures");
+            
+            if (!Directory.Exists(imageFolderPath))
+            {
+                Directory.CreateDirectory(imageFolderPath);
+            }
 
             if (Request.Form.Files.Any())
             {
                 foreach (var file in Request.Form.Files)
                 {
-                    var serverSavePath = Path.Combine(Directory.GetCurrentDirectory(), "profilePictures", file.FileName);
-
-                    using (var stream = new FileStream(serverSavePath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(stream);
-                    }
+                    var serverSavePath = Path.Combine(imageFolderPath, file.FileName);
 
                     if (user.ProfilePictures.Contains(serverSavePath))
                     {
                         continue;
+                    }
+
+                    using (var stream = new FileStream(serverSavePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
                     }
 
                     var pictures = user.ProfilePictures.ToList();
