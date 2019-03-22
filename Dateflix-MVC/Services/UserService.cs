@@ -154,6 +154,7 @@ namespace DateflixMVC.Services
                 userInDb.PasswordHash = passwordHash;
                 userInDb.PasswordSalt = passwordSalt;
             }
+
             _context.Users.Update(userInDb);
             _context.SaveChanges();
         }

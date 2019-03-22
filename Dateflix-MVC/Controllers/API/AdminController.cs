@@ -52,6 +52,7 @@ namespace DateflixMVC.Controllers.API
             }
 
             await _context.Bans.AddAsync(_mapper.Map<Bans>(banDto));
+            await _context.SaveChangesAsync();
 
             return Ok();
         }

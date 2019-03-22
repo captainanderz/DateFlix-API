@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DateflixMVC.Dtos;
@@ -98,6 +100,56 @@ namespace DateflixMVC.Controllers.API
             return Ok();
         }
 
+        [HttpPost("updateprofilepictures")]
+        public async Task<IActionResult> UpdateProfilePictures(int userId, [FromForm]UserDto userDto)
+        {
+            var user = _mapper.Map<User>(userDto);
+            user.Id = userId;
+
+            if (Request.Form.Files.Any())
+            {
+                foreach (var file in Request.Form.Files)
+                {
+                    var serverSavePath = Path.Combine(Directory.GetCurrentDirectory(), "profilePictures", file.FileName);
+
+                    using (var stream = new FileStream(serverSavePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    if (user.ProfilePictures.Contains(serverSavePath))
+                    {
+                        continue;
+                    }
+
+                    var pictures = user.ProfilePictures.ToList();
+                    pictures.Add(serverSavePath);
+                    user.ProfilePictures = pictures.ToArray();
+                }
+            }
+
+            _userService.Update(user);
+            return Ok();
+        }
+
+        [HttpGet("downloadprofilepicture")]
+        public async Task<IActionResult> DownloadProfilePicture(int userId, [FromBody]UserDto userDto)
+        {
+            var user = _userService.GetById(userId);
+            user.Id = userId;
+
+            var picturePath = userDto.ProfilePictures[0];
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(picturePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+
+            memory.Position = 0;
+
+            return File(memory, GetContentType(picturePath), Path.GetFileName(picturePath));
+        }
+
         [HttpPost("UpdateUserPreference")]
         public IActionResult UpdateUserPreference(int userId, [FromBody] UserPreferenceDto userPreferenceDto)
         {
@@ -114,5 +166,33 @@ namespace DateflixMVC.Controllers.API
             return Ok();
         }
 
+        #region PrivateMethods
+
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                {".txt", "text/plain"},
+                {".pdf", "application/pdf"},
+                {".doc", "application/vnd.ms-word"},
+                {".docx", "application/vnd.ms-word"},
+                {".xls", "application/vnd.ms-excel"},
+                {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+                {".png", "image/png"},
+                {".jpg", "image/jpeg"},
+                {".jpeg", "image/jpeg"},
+                {".gif", "image/gif"},
+                {".csv", "text/csv"}
+            };
+        }
+
+        #endregion
     }
 }
