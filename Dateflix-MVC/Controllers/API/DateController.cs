@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,13 +28,6 @@ namespace DateflixMVC.Controllers.API
             _context = context;
             _mapper = mapper;
             _userService = userService;
-        }
-
-        // GET: api/date
-        [HttpGet("getAll")]
-        public async Task<ActionResult<IEnumerable<Likes>>> GetLikes()
-        {
-            return await _context.Likes.ToListAsync();
         }
 
         [HttpGet("getMatchingUsers")]
