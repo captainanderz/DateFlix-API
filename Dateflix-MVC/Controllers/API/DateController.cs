@@ -52,6 +52,18 @@ namespace DateflixMVC.Controllers.API
             return Ok(usersDto);
         }
 
+        [HttpGet("likes")]
+        public IActionResult GetLikes()
+        {
+            return Ok(_context.Likes.ToList());
+        }
+
+        [HttpGet("matchess")]
+        public IActionResult GetMatches()
+        {
+            return Ok(_context.Matches.ToList());
+        }
+
         //POST: api/date/like
         [HttpPost("like")]
         public IActionResult Like([FromBody]LikeDto likeDto)
@@ -63,29 +75,33 @@ namespace DateflixMVC.Controllers.API
 
             likeDto.CreatedDate = DateTime.UtcNow;
 
-            var duplicate = _context.Likes.Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
-            // The like already exists
-            if (duplicate != null)
-                return Ok();
-
             //var existingMatch = _context.Likes.AsQueryable().Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
             var existingMatch = _context.Matches.Where(x => x.UserOneId == likeDto.UserId && x.UserTwoId == likeDto.LikedId
             || x.UserTwoId == likeDto.LikedId && x.UserOneId == likeDto.UserId);
 
             if (existingMatch.Any()) // If match already exists
             {
-                return Ok(true);
+                return Ok("Existing match");
             }
 
+            var duplicate = _context.Likes.Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
+            // The like already exists
+            if (duplicate.Count() > 0)
+                return Ok("Duplicate");
+
             var matchHappened = _context.Likes.SingleOrDefault(x => x.UserId == likeDto.LikedId && x.LikedId == likeDto.UserId);
-            // If match occours, add new match
+            // If match occours, add new match and like
             if (matchHappened != null)
+            { 
                 _context.Matches.Add(new Match { UserOneId = likeDto.UserId, UserTwoId = likeDto.LikedId });
-            
+                _context.Likes.Add(_mapper.Map<Likes>(likeDto));
+                _context.SaveChanges();
+                return Ok("Match happened!");
+            }
+
             var likesEntry = _context.Likes.Add(_mapper.Map<Likes>(likeDto));
             _context.SaveChanges();
-
-            return Ok();
+            return Ok("Like recorded");
         }
 
         //GET: api/date/matches
