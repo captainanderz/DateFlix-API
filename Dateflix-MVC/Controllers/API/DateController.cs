@@ -63,7 +63,6 @@ namespace DateflixMVC.Controllers.API
 
             likeDto.CreatedDate = DateTime.UtcNow;
 
-            //var existingMatch = _context.Likes.AsQueryable().Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
             var existingMatch = _context.Matches.Where(x => x.UserOneId == likeDto.UserId && x.UserTwoId == likeDto.LikedId
             || x.UserTwoId == likeDto.LikedId && x.UserOneId == likeDto.UserId);
 
