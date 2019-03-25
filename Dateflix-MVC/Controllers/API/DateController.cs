@@ -52,18 +52,6 @@ namespace DateflixMVC.Controllers.API
             return Ok(usersDto);
         }
 
-        [HttpGet("likes")]
-        public IActionResult GetLikes()
-        {
-            return Ok(_context.Likes.ToList());
-        }
-
-        [HttpGet("matchess")]
-        public IActionResult GetMatches()
-        {
-            return Ok(_context.Matches.ToList());
-        }
-
         //POST: api/date/like
         [HttpPost("like")]
         public IActionResult Like([FromBody]LikeDto likeDto)
