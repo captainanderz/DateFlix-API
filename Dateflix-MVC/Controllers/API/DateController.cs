@@ -108,30 +108,15 @@ namespace DateflixMVC.Controllers.API
         [HttpGet("matches")]
         public IActionResult GetMatches(int userId)
         {
-            var userLiked = _context.Likes.AsQueryable().Where(x => x.UserId == userId).ToList();
-            var likedUser = _context.Likes.AsQueryable().Where(x => x.LikedId == userId).ToList();
-
-            var matchedUserIds = new List<int>();
-            foreach (var like in userLiked)
+            var matches = _context.Matches.Where(x => x.UserOneId == userId || x.UserTwoId == userId); // Fetch all of the matches
+            var matchedUsers = new List<User>(); // This list will contain all the matched users
+            foreach (var match in matches)
             {
-                if (likedUser.Any(x => x.UserId == like.LikedId))
-                {
-                    matchedUserIds.Add(like.LikedId);
-                }
+                var user = _userService.GetById(match.UserOneId == userId ? match.UserTwoId : match.UserOneId); // If userId is UserOneId, search for opposite user in Db. Ie. search for the matched user or vice versa.
+                matchedUsers.Add(user); 
             }
-
-            var likedUsers = new List<User>();
-
-            foreach (var matchedUserId in matchedUserIds)
-            {
-                var user = _userService.GetByIdAsync(matchedUserId);
-                if (user != null)
-                {
-                    likedUsers.Add(user.Result);
-                }
-            }
-
-            return Ok(likedUsers);
+            var dtoMatchedUsers = _mapper.Map<IEnumerable<User>, List<UserDto>>(matchedUsers);
+            return Ok(dtoMatchedUsers);
         }
 
         // GET: api/Date/5
