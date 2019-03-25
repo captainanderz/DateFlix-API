@@ -32,7 +32,7 @@ namespace DateflixMVC.Hubs
                 return;
             }
 
-            ConnectedUsers.AddConnectionIdToUser(email, Context.ConnectionId);
+            ConnectedUsers.AddUser(email, Context.ConnectionId);
 
             await base.OnConnectedAsync();
             await Clients.Client(Context.ConnectionId).SendCoreAsync("SetConnectionId", new object[] { Context.ConnectionId });
@@ -45,25 +45,25 @@ namespace DateflixMVC.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendMessage(string message, string username, string senderConnectionId, string receiverConnectionId, string receiverUsername = null)
+        public async Task SendMessage(string message, string email, string senderConnectionId, string receiverConnectionId, string receiverEmail = null)
         {
             if (string.IsNullOrWhiteSpace(receiverConnectionId))
             {
-                receiverConnectionId = GetConnectionIdFromEmail(receiverUsername);
+                receiverConnectionId = GetConnectionIdFromEmail(receiverEmail);
             }
 
             if (receiverConnectionId != null)
             {
-                await Clients.Clients(receiverConnectionId).SendCoreAsync("ReceiveMessage", new object[] { username, message, senderConnectionId });
+                await Clients.Clients(receiverConnectionId).SendCoreAsync("ReceiveMessage", new object[] { email, message, senderConnectionId });
             }
 
             // Save message to DB
-            await _messageService.SaveMessage(username, receiverUsername, message);
+            await _messageService.SaveMessage(email, receiverEmail, message);
         }
 
-        public async Task GetMessages(string senderUsername, string senderConnectionId, string receiverUsername)
+        public async Task GetMessages(string senderEmail, string senderConnectionId, string receiverEmail)
         {
-            var messages = _messageService.GetMessages(senderUsername, receiverUsername);
+            var messages = _messageService.GetMessages(senderEmail, receiverEmail);
             await Clients.Clients(senderConnectionId).SendCoreAsync("GetMessages", new object[] {messages});
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
-using Dateflix.Hubs;
 using DateflixMVC.Helpers;
 using DateflixMVC.Hubs;
 using Microsoft.AspNetCore.Builder;
@@ -108,7 +107,6 @@ namespace DateflixMVC
 
             app.UseAuthentication();
 
-            app.UseSignalR(routes => { routes.MapHub<ChatHub>("/chathub"); });
             app.UseSignalR(routes => { routes.MapHub<PrivateChatHub>("/privatechathub"); });
 
             app.UseMvc(routes =>
