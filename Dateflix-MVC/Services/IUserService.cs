@@ -18,5 +18,8 @@ namespace DateflixMVC.Services
         void Delete(int id);
         IEnumerable<Claim> GetUserClaims(User user);
         User GetById(int id);
+        bool IsValid(int minimum, int maximum);
+        bool AgeRangeContainsValue(int value, UserPreference userPreference);
+        bool IsInsideRange(int value, UserPreference userPreference);
     }
 }
