@@ -117,12 +117,6 @@ namespace DateflixMVC.Controllers.API
         public IActionResult GetLikes(int userId)
         {
             var likes = _context.Likes.Where(x => x.UserId == userId);
-
-            if (likes == null)
-            {
-                return NotFound();
-            }
-
             return Ok(likes);
         }
 
