@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DateflixMVC.Dtos;
 using DateflixMVC.Extensions;
 using DateflixMVC.Models.SignalR;
 using DateflixMVC.Services;
@@ -61,10 +62,10 @@ namespace DateflixMVC.Hubs
             await _messageService.SaveMessage(email, receiverEmail, message);
         }
 
-        public async Task GetMessages(string senderEmail, string senderConnectionId, string receiverEmail)
+        public List<MessageDto> GetMessages(string senderEmail, string senderConnectionId, string receiverEmail)
         {
             var messages = _messageService.GetMessages(senderEmail, receiverEmail);
-            await Clients.Clients(senderConnectionId).SendCoreAsync("GetMessages", new object[] {messages});
+            return messages;
         }
 
         public string GetConnectionId()

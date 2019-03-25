@@ -66,13 +66,11 @@
             $('#frndConnId').val(friendConnectionId);
         });
 
-        $('#getMessages').click(function() {
-            connection.invoke("GetMessages", email, connectionId, $("#frndUsername").val());
-        });
+        $('#getMessages').click(async function() {
+            var messages = await connection.invoke("GetMessages", email, connectionId, $("#frndUsername").val());
 
-        connection.on("GetMessages", function (messages) {
-            console.log(messages);
-            messages.forEach(function(message) {
+            console.log(messages.val);
+            messages.forEach(function (message) {
                 var msg = message.message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 var encodedMsg = message.senderFirstname + " says " + msg;
                 var li = document.createElement("li");
@@ -80,6 +78,10 @@
                 $('#discussion').append('<li><strong>' + htmlEncode(message.senderFirstname)
                     + '</strong>: ' + htmlEncode(message.message) + '</li>');
             });
+        });
+
+        connection.on("GetMessages", function (messages) {
+            
         });
 
         connection.on("ReceiveMessage", function (user, message, fromConnectionId) {
