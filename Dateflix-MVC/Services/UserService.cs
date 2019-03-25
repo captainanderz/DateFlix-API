@@ -109,7 +109,6 @@ namespace DateflixMVC.Services
 
         public async Task<User> GetByIdAsync(int id)
         {
-            //return await _context.Users.FindAsync(id);
             return _context.Users.AsQueryable().Include(x => x.UserPreference).Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
         }
 

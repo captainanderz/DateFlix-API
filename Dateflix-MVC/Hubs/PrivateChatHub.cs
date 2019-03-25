@@ -27,6 +27,8 @@ namespace DateflixMVC.Hubs
 
         public override Task OnConnectedAsync() // Called when a new connection is connected to the hub
         {
+            // TODO: Add connected
+            //ConnectedUsers.AddConnectionIdToUser()
             return Clients.Client(Context.ConnectionId).SendCoreAsync("SetConnectionId", new object[] { Context.ConnectionId });
         }
 
