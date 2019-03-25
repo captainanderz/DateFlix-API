@@ -6,9 +6,9 @@ namespace DateflixMVC.Extensions
 {
     public static class UserDetailExtension
     {
-        public static List<UserDetail> AddConnectionIdToUser(this List<UserDetail> userDetailsList, string username, string connectionId)
+        public static List<UserDetail> AddConnectionIdToUser(this List<UserDetail> userDetailsList, string email, string connectionId)
         {
-            var userToUpdate = userDetailsList.FirstOrDefault(x => x.Username == username);
+            var userToUpdate = userDetailsList.FirstOrDefault(x => x.Email == email);
 
             if (userToUpdate != null)
             {
@@ -18,9 +18,9 @@ namespace DateflixMVC.Extensions
             return userDetailsList;
         }
 
-        public static bool HasUsername(this List<UserDetail> userDetailsList, string username)
+        public static bool HasEmail(this List<UserDetail> userDetailsList, string email)
         {
-            return userDetailsList.Any(x => x.Username.ToLower() == username.ToLower());
+            return userDetailsList.Any(x => x.Email.ToLower() == email.ToLower());
         }
 
         public static UserDetail GetUserByConnectionId(this List<UserDetail> userDetailsList, string connectionId)
