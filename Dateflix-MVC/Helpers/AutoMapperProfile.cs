@@ -38,6 +38,10 @@ namespace DateflixMVC.Helpers
             // UserPreference map
             CreateMap<UserPreference, UserPreferenceDto>();
             CreateMap<UserPreferenceDto, UserPreference>();
+
+            // Inquiry map
+            CreateMap<Inquiries, InquiryDto>();
+            CreateMap<InquiryDto, Inquiries>();
         }
     }
 }

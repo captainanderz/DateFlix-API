@@ -80,6 +80,7 @@ namespace DateflixMVC
             services.AddHttpContextAccessor();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IMessageService, MessagesService>();
+            services.AddTransient<IInquiryService, InquiryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
