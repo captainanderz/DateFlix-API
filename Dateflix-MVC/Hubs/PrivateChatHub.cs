@@ -67,17 +67,6 @@ namespace DateflixMVC.Hubs
             await Clients.Clients(senderConnectionId).SendCoreAsync("GetMessages", new object[] {messages});
         }
 
-        public void AddUserList(string username, string connectionId)
-        {
-            ConnectedUsers.Add(new UserDetail()
-            {
-                ConnectionId = connectionId,
-                Email = username
-            });
-
-            //await Clients.All.SendCoreAsync("SetList", new object[] {ConnectedUsers});
-        }
-
         public string GetConnectionId()
         {
             return Context.ConnectionId;

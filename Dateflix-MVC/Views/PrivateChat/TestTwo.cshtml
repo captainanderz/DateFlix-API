@@ -42,7 +42,6 @@
             document.getElementById("sendmessage").disabled = false;
             document.getElementById('yourConnectionId').innerHTML = connectionId;
             $('#displayname').val(email);
-            connection.invoke("AddUserList", email, connectionId);
             swal("You connection Id", connectionId, "success");
         }).catch(function (err) {
             return console.error(err.toString());

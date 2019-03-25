@@ -42,10 +42,10 @@ namespace DateflixMVC.Controllers.API
 
             var matchingUsers = _userService.GetAll()
                 .Where(x => x.Gender == user.UserPreference.Gender
-                && _userService.IsInsideRange(x.Birthday.ToAge(), user.UserPreference)
+                && _userService.IsAgeInsideRange(x.Birthday.ToAge(), user.UserPreference)
                 && x.UserPreference != null
                 && x.UserPreference.Gender == user.Gender
-                && _userService.IsInsideRange(user.Birthday.ToAge(), x.UserPreference)).ToList();
+                && _userService.IsAgeInsideRange(user.Birthday.ToAge(), x.UserPreference)).ToList();
 
             var usersDto = _mapper.Map<IEnumerable<User>, List<UserDto>>(matchingUsers);
 

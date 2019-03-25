@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -101,18 +102,19 @@ namespace DateflixMVC.Controllers.API
         {
             var user = _mapper.Map<User>(userDto);
             user.Id = userId;
-            var imageFolderPath = Path.Combine(_hostingEnvironment.WebRootPath, "profilePictures");
-            
-            if (!Directory.Exists(imageFolderPath))
+            var imageFolderPath = Path.Combine("profilePictures", userId.ToString());
+            var serverImageFolderPath = Path.Combine(_hostingEnvironment.WebRootPath, imageFolderPath);
+
+            if (!Directory.Exists(serverImageFolderPath))
             {
-                Directory.CreateDirectory(imageFolderPath);
+                Directory.CreateDirectory(serverImageFolderPath);
             }
 
             if (Request.Form.Files.Any())
             {
                 foreach (var file in Request.Form.Files)
                 {
-                    var serverSavePath = Path.Combine(imageFolderPath, file.FileName);
+                    var serverSavePath = Path.Combine(serverImageFolderPath, file.FileName);
 
                     if (user.ProfilePictures.Contains(serverSavePath))
                     {
