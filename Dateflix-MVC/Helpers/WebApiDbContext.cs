@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DateflixMVC.Models;
 using DateflixMVC.Models.Profile;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +19,7 @@ namespace DateflixMVC.Helpers
         public DbSet<DirectMessages> DirrectMessages { get; set; }
         public DbSet<Likes> Likes { get; set; }
         public DbSet<UserPreference> UserPreference { get; set; }
+        public DbSet<Match> Matches { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -63,23 +63,29 @@ namespace DateflixMVC.Controllers.API
 
             likeDto.CreatedDate = DateTime.UtcNow;
 
-            var existingMatch = _context.Likes.AsQueryable().Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
-
-            if (existingMatch.Any())
-            {
+            var duplicate = _context.Likes.Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
+            // The like already exists
+            if (duplicate != null)
                 return Ok();
-            }
 
-            var likesEntry = _context.Likes.Add(_mapper.Map<Likes>(likeDto));
-            _context.SaveChanges();
-            var match = _context.Likes.AsQueryable().FirstOrDefault(x => x.UserId == likeDto.LikedId && x.LikedId == likeDto.UserId);
+            //var existingMatch = _context.Likes.AsQueryable().Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
+            var existingMatch = _context.Matches.Where(x => x.UserOneId == likeDto.UserId && x.UserTwoId == likeDto.LikedId
+            || x.UserTwoId == likeDto.LikedId && x.UserOneId == likeDto.UserId);
 
-            if (match != null)
+            if (existingMatch.Any()) // If match already exists
             {
                 return Ok(true);
             }
 
-            return likesEntry == null ? StatusCode(500) : Ok();
+            var matchHappened = _context.Likes.SingleOrDefault(x => x.UserId == likeDto.LikedId && x.LikedId == likeDto.UserId);
+            // If match occours, add new match
+            if (matchHappened != null)
+                _context.Matches.Add(new Match { UserOneId = likeDto.UserId, UserTwoId = likeDto.LikedId });
+            
+            var likesEntry = _context.Likes.Add(_mapper.Map<Likes>(likeDto));
+            _context.SaveChanges();
+
+            return Ok();
         }
 
         //GET: api/date/matches
