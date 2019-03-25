@@ -49,11 +49,6 @@ namespace DateflixMVC.Controllers.API
 
             var usersDto = _mapper.Map<IEnumerable<User>, List<UserDto>>(matchingUsers);
 
-            if (!usersDto.Any())
-            {
-                return Ok("No matching users");
-            }
-
             return Ok(usersDto);
         }
 
