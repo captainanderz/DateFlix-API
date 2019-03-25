@@ -114,16 +114,16 @@ namespace DateflixMVC.Controllers.API
 
         // GET: api/Date/5
         [HttpGet("{userId}")]
-        public async Task<ActionResult<Likes>> GetLikes(int userId)
+        public IActionResult GetLikes(int userId)
         {
-            var likes = await _context.Likes.FindAsync(userId);
+            var likes = _context.Likes.Where(x => x.UserId == userId);
 
             if (likes == null)
             {
                 return NotFound();
             }
 
-            return likes;
+            return Ok(likes);
         }
 
         //GET: api/date/block
