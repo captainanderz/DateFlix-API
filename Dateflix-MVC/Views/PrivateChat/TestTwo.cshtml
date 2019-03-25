@@ -30,7 +30,7 @@
 <script>
     var email = "";
     //var sessionVal = '';
-    var connection = new signalR.HubConnectionBuilder().withUrl("/privatechathub?email=testingUsername").build();
+    var connection = new signalR.HubConnectionBuilder().withUrl("/privatechathub?email=test1@test.com").build();
     var connectionId = null;
     async function getConnectionId() {
         return connection.invoke("GetConnectionId");
@@ -43,7 +43,7 @@
             document.getElementById('yourConnectionId').innerHTML = connectionId;
             $('#displayname').val(email);
             swal("You connection Id", connectionId, "success");
-        }).catch(function (err) {
+            }).catch(function (err) {
             return console.error(err.toString());
             });
 
@@ -61,15 +61,16 @@
             $('#discussion').append('<li><strong>' + htmlEncode($('#displayname').val())
                 + '</strong>: ' + htmlEncode($('#message').val()) + '</li>');
             $('#message').val('').focus();
+
+            var friendConnectionId = connection.invoke("GetConnectionIdFromEmail", $("#frndConnId").val(), null);
+            $('#frndConnId').val(friendConnectionId);
         });
 
-        $('#getMessages').click(function() {
-            connection.invoke("GetMessages", email, connectionId, $("#frndUsername").val());
-        });
+        $('#getMessages').click(async function() {
+            var messages = await connection.invoke("GetMessages", email, connectionId, $("#frndUsername").val());
 
-        connection.on("GetMessages", function (messages) {
-            console.log(messages);
-            messages.forEach(function(message) {
+            console.log(messages.val);
+            messages.forEach(function (message) {
                 var msg = message.message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 var encodedMsg = message.senderFirstname + " says " + msg;
                 var li = document.createElement("li");
@@ -77,6 +78,10 @@
                 $('#discussion').append('<li><strong>' + htmlEncode(message.senderFirstname)
                     + '</strong>: ' + htmlEncode(message.message) + '</li>');
             });
+        });
+
+        connection.on("GetMessages", function (messages) {
+            
         });
 
         connection.on("ReceiveMessage", function (user, message, fromConnectionId) {

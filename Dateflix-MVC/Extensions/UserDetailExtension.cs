@@ -6,6 +6,17 @@ namespace DateflixMVC.Extensions
 {
     public static class UserDetailExtension
     {
+        public static List<UserDetail> AddUser(this List<UserDetail> userDetailsList, string email, string connectionId)
+        {
+            userDetailsList.Add(new UserDetail()
+            {
+                Email = email,
+                ConnectionId = connectionId
+            });
+
+            return userDetailsList;
+        }
+
         public static List<UserDetail> AddConnectionIdToUser(this List<UserDetail> userDetailsList, string email, string connectionId)
         {
             var userToUpdate = userDetailsList.FirstOrDefault(x => x.Email == email);
