@@ -15,7 +15,6 @@ namespace DateflixMVC.Helpers
         public DbSet<Inquiries> Inquiries { get; set; }
         public DbSet<Blocks> Blocks { get; set; }
         public DbSet<Bans> Bans { get; set; }
-        public DbSet<ActiveLogins> ActiveLogins { get; set; }
         public DbSet<DirectMessages> DirrectMessages { get; set; }
         public DbSet<Likes> Likes { get; set; }
         public DbSet<UserPreference> UserPreference { get; set; }
