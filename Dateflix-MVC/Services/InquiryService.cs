@@ -1,4 +1,4 @@
-﻿using DateflixMVC.Helpers;
+using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
 
 namespace DateflixMVC.Services
@@ -30,6 +30,7 @@ namespace DateflixMVC.Services
             else if (string.IsNullOrWhiteSpace(inquiry.Message))
                 return null;
 
+            //Add inquiry and save changes to database
             _context.Inquiries.Add(inquiry);
             _context.SaveChanges();
 
