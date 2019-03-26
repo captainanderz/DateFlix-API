@@ -17,15 +17,15 @@ namespace DateflixMVC.Services
             _context = context;
         }
 
-        public async Task SaveMessage(string senderUsername, string receiverUsername, string message)
+        public async Task SaveMessage(string senderEmail, string receiverEmail, string message)
         {
-            if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(senderUsername) || string.IsNullOrWhiteSpace(receiverUsername))
+            if (string.IsNullOrWhiteSpace(message) || string.IsNullOrWhiteSpace(senderEmail) || string.IsNullOrWhiteSpace(receiverEmail))
             {
                 return;
             }
 
-            var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == senderUsername);
-            var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == receiverUsername);
+            var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == senderEmail);
+            var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == receiverEmail);
 
             if (senderUser == null || receiverUser == null)
             {
@@ -54,12 +54,12 @@ namespace DateflixMVC.Services
             await _context.SaveChangesAsync();
         }
 
-        public List<MessageDto> GetMessages(string senderUsername, string receiverUsername, string senderId = null, string receiverId = null)
+        public List<MessageDto> GetMessages(string senderEmail, string receiverEmail, string senderId = null, string receiverId = null)
         {
             if (senderId == null || receiverId == null)
             {
-                var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == senderUsername);
-                var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == receiverUsername);
+                var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == senderEmail);
+                var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == receiverEmail);
 
                 if (senderUser == null || receiverUser == null)
                 {
@@ -84,8 +84,8 @@ namespace DateflixMVC.Services
                 {
                     Date = directMessage.CreatedDate,
                     Message = directMessage.Message,
-                    ReceiverFirstname = receiverId == directMessage.ReceiverId.ToString() ? receiverUsername : senderUsername,
-                    SenderFirstname = senderId == directMessage.SenderId.ToString() ? senderUsername : receiverUsername
+                    ReceiverFirstname = receiverId == directMessage.ReceiverId.ToString() ? receiverEmail : senderEmail,
+                    SenderFirstname = senderId == directMessage.SenderId.ToString() ? senderEmail : receiverEmail
                 });
             }
 

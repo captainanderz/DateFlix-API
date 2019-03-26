@@ -8,10 +8,10 @@ namespace DateflixMVC.Services
 {
     public interface IUserService
     {
-        UserDto Authenticate(string username, string password);
+        UserDto Authenticate(string email, string password);
         List<User> GetAll();
         Task<User> GetByIdAsync(int id);
-        User GetByUsername(string username);
+        User GetByEmail(string email);
         User Create(User user, string password);
         void Update(User user, string password = null);
         bool UpdateUserPreference(int id, UserPreference userPreference);

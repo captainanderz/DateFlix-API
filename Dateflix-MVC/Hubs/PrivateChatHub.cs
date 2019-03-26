@@ -14,16 +14,15 @@ namespace DateflixMVC.Hubs
     {
         public static List<UserDetail> ConnectedUsers = new List<UserDetail>();
 
-        private IUserService _userService;
         private IMessageService _messageService;
 
-        public PrivateChatHub(IUserService userService, IMessageService messageService)
+        public PrivateChatHub(IMessageService messageService)
         {
-            _userService = userService;
             _messageService = messageService;
         }
 
-        public override async Task OnConnectedAsync() // Called when a new connection is connected to the hub
+        // Called when a new connection is connected to the hub
+        public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
             var email = httpContext.Request.Query["email"].ToString();

@@ -26,12 +26,12 @@ namespace DateflixMVC.Services
             _appSettings = appSettings.Value;
         }
 
-        public UserDto Authenticate(string username, string password)
+        public UserDto Authenticate(string email, string password)
         {
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
                 return null;
 
-            var user = _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).SingleOrDefault(u => u.Email == username);
+            var user = _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).SingleOrDefault(u => u.Email == email);
 
             if (user == null)
                 return null;
@@ -112,9 +112,9 @@ namespace DateflixMVC.Services
             return _context.Users.AsQueryable().Include(x => x.UserPreference).Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Id == id);
         }
 
-        public User GetByUsername(string username)
+        public User GetByEmail(string email)
         {
-            return _context.Users.AsQueryable().Include(x => x.UserPreference).Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Email == username);
+            return _context.Users.AsQueryable().Include(x => x.UserPreference).Include(x => x.Roles).ThenInclude(x => x.Role).Include(x => x.Roles).ThenInclude(x => x.User).SingleOrDefault(x => x.Email == email);
         }
 
         public void Update(User user, string password = null)
@@ -128,7 +128,7 @@ namespace DateflixMVC.Services
 
             if (user.Email != userInDb.Email)
             {
-                // username changed, checking for availability
+                // email changed, checking for availability
                 if (_context.Users.Any(x => x.Email == user.Email))
                 {
                     throw new AppException("Email " + user.Email + " is already taken");
