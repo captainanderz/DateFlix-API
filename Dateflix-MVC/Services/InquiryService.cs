@@ -1,5 +1,6 @@
 using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
+using System;
 
 namespace DateflixMVC.Services
 {
@@ -29,6 +30,9 @@ namespace DateflixMVC.Services
                 return null;
             else if (string.IsNullOrWhiteSpace(inquiry.Message))
                 return null;
+
+            //Set createddate timestamp
+            inquiry.CreatedDate = DateTime.UtcNow;
 
             //Add inquiry and save changes to database
             _context.Inquiries.Add(inquiry);

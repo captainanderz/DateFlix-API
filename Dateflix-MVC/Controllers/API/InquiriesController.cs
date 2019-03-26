@@ -7,10 +7,14 @@ using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
 using DateflixMVC.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DateflixMVC.Controllers.API
 {
+    //[Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
     public class InquiriesController : Controller
     {
         private readonly IMapper _mapper;
@@ -24,7 +28,12 @@ namespace DateflixMVC.Controllers.API
             _inquiryService = inquiryService;
         }
 
-        [HttpGet("submit")]
+        public IActionResult Test()
+        {
+            return Ok(_context.Inquiries.ToList());
+        }
+
+        [HttpPost("submit")]
         public IActionResult SubmitInquiry([FromBody]InquiryDto inquiryDto)
         {
             var inquiry = _mapper.Map<Inquiries>(inquiryDto); // Convert dto to model
