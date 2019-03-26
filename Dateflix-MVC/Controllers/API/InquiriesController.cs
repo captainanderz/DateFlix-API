@@ -33,6 +33,16 @@ namespace DateflixMVC.Controllers.API
             return Ok(_context.Inquiries.ToList());
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetInquiryById(int id)
+        {
+            var inquiry = _inquiryService.GetById(id); // Fetches inquiry by it's id
+            if (inquiry == null) 
+                return NoContent(); // Return 204 if inquiry is null
+
+            return Ok(inquiry);
+        }
+
         [HttpGet("userinquiries/{userId}")]
         public IActionResult GetUserInquiries(int userId)
         {
