@@ -10,6 +10,7 @@ namespace DateflixMVC.Services
     public interface IInquiryService
     {
         Inquiries GetById(int id);
+        IEnumerable<Inquiries> GetInquiriesByUserId(int userId);
         Inquiries SubmitInquiry(Inquiries inquiry);
         Inquiries DeleteInquiry(Inquiries inquiry);
     }

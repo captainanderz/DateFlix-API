@@ -1,6 +1,8 @@
 using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DateflixMVC.Services
 {
@@ -13,14 +15,24 @@ namespace DateflixMVC.Services
             _context = context;
         }
 
-        public Inquiries DeleteInquiry(Inquiries inquiry)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public Inquiries GetById(int id)
         {
-            throw new System.NotImplementedException();
+            var inquiry = _context.Inquiries.Find(id); // Find inquiry by id
+
+            if (inquiry == null) // if inquiry doesen't exist, return null.
+                return null;
+
+            return inquiry;
+        }
+
+        public IEnumerable<Inquiries> GetInquiriesByUserId(int userId)
+        {
+            var inquiries = _context.Inquiries.Where(x => x.UserId == userId); // Returns all inquiries with the given userid
+
+            if (inquiries.Count() == 0) // If list is empty, return null
+                return null;
+
+            return inquiries;
         }
 
         public Inquiries SubmitInquiry(Inquiries inquiry)
@@ -39,6 +51,11 @@ namespace DateflixMVC.Services
             _context.SaveChanges();
 
             return inquiry;
+        }
+
+        public Inquiries DeleteInquiry(Inquiries inquiry)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
