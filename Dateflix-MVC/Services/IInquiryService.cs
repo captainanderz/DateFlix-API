@@ -12,6 +12,6 @@ namespace DateflixMVC.Services
         Inquiries GetById(int id);
         IEnumerable<Inquiries> GetInquiriesByUserId(int userId);
         Inquiries SubmitInquiry(Inquiries inquiry);
-        Inquiries DeleteInquiry(Inquiries inquiry);
+        void DeleteInquiry(Inquiries inquiry);
     }
 }

@@ -53,9 +53,11 @@ namespace DateflixMVC.Services
             return inquiry;
         }
 
-        public Inquiries DeleteInquiry(Inquiries inquiry)
+        public void DeleteInquiry(Inquiries inquiry)
         {
-            throw new System.NotImplementedException();
+            //Delete inquiry and save changes to database
+            _context.Inquiries.Remove(inquiry);
+            _context.SaveChanges();
         }
     }
 }

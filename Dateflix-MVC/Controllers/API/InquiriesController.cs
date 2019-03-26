@@ -64,5 +64,16 @@ namespace DateflixMVC.Controllers.API
             else // something went wrong
                 return Content("Failed to save message");
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteInquiry(int id)
+        {
+            var inquiry = _inquiryService.GetById(id); // Fetch inquiry by id
+            if (inquiry == null)
+                return BadRequest(); // if inquiry doesent exists, return badrequest
+
+            _inquiryService.DeleteInquiry(inquiry); // delete inquiry
+            return Ok();
+        }
     }
 }
