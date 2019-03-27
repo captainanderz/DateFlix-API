@@ -70,9 +70,9 @@ namespace DateflixMVC.Services
         {
             // Validation..
             if (string.IsNullOrWhiteSpace(password))
-                throw new AppException("Password is required");
+                return null;
             if (_context.Users.Any(x => x.Email == user.Email))
-                throw new AppException("Email " + user.Email + " is already taken");
+                return null;
 
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
@@ -123,7 +123,7 @@ namespace DateflixMVC.Services
 
             if (userInDb == null)
             {
-                throw new AppException("User not found");
+                throw new Exception("User not found");
             }
 
             if (user.Email != userInDb.Email)
@@ -131,7 +131,7 @@ namespace DateflixMVC.Services
                 // email changed, checking for availability
                 if (_context.Users.Any(x => x.Email == user.Email))
                 {
-                    throw new AppException("Email " + user.Email + " is already taken");
+                    throw new Exception("Email " + user.Email + " is already taken");
                 }
             }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,6 +54,8 @@ namespace DateflixMVC.Controllers.API
             var mappedUser = _mapper.Map<User>(userDto);
             
             var user = _userService.Create(mappedUser, userDto.Password);
+            if (user == null)
+                return BadRequest();
             return Ok(user);
         }
 

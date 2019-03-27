@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +6,7 @@ using AutoMapper;
 using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models;
+using DateflixMVC.Models.Profile;
 using DateflixMVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
