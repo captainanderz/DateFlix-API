@@ -54,24 +54,18 @@ namespace DateflixMVC.Services
             await _context.SaveChangesAsync();
         }
 
-        public List<MessageDto> GetMessages(string senderEmail, string receiverEmail, string senderId = null, string receiverId = null)
+        public List<MessageDto> GetMessages(string senderEmail, string receiverEmail)
         {
-            if (senderId == null || receiverId == null)
+            var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == senderEmail);
+            var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == receiverEmail);
+
+            if (senderUser == null || receiverUser == null)
             {
-                var senderUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == senderEmail);
-                var receiverUser = _context.Users.AsQueryable().FirstOrDefault(x => x.Email == receiverEmail);
-
-                if (senderUser == null || receiverUser == null)
-                {
-                    return null;
-                }
-
-                senderId = senderUser.Id.ToString();
-                receiverId = receiverUser.Id.ToString();
+                return null;
             }
 
-            var senderMessages = _context.DirrectMessages.AsQueryable().Where(x => x.SenderId.ToString() == senderId && x.ReceiverId.ToString() == receiverId).ToList();
-            var receiverMessages = _context.DirrectMessages.AsQueryable().Where(x => x.SenderId.ToString() == receiverId && x.ReceiverId.ToString() == senderId).ToList();
+            var senderMessages = _context.DirrectMessages.AsQueryable().Where(x => x.SenderId == senderUser.Id && x.ReceiverId == receiverUser.Id).ToList();
+            var receiverMessages = _context.DirrectMessages.AsQueryable().Where(x => x.SenderId == receiverUser.Id && x.ReceiverId == senderUser.Id).ToList();
 
             var allMessages = senderMessages;
             allMessages.AddRange(receiverMessages);
@@ -84,8 +78,8 @@ namespace DateflixMVC.Services
                 {
                     Date = directMessage.CreatedDate,
                     Message = directMessage.Message,
-                    ReceiverFirstname = receiverId == directMessage.ReceiverId.ToString() ? receiverEmail : senderEmail,
-                    SenderFirstname = senderId == directMessage.SenderId.ToString() ? senderEmail : receiverEmail
+                    ReceiverFirstname = receiverUser.Id == directMessage.ReceiverId ? receiverUser.FirstName : senderUser.FirstName,
+                    SenderFirstname = senderUser.Id == directMessage.SenderId ? senderUser.FirstName : receiverUser.FirstName
                 });
             }
 
