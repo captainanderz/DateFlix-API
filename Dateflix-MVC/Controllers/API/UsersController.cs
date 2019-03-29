@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DateflixMVC.Controllers.API
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : Controller
@@ -55,7 +55,6 @@ namespace DateflixMVC.Controllers.API
 
 
         [HttpGet("getall")]
-        //[Authorize(Roles = "Captain")]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
@@ -63,7 +62,6 @@ namespace DateflixMVC.Controllers.API
             return Ok(userDtos);
         }
 
-        //[Authorize]
         [HttpGet("getbyid")]
         public async Task<IActionResult> GetById(int userId)
         {
