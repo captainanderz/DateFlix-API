@@ -1,18 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using AutoMapper;
 using DateflixMVC.Dtos;
-using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
 using DateflixMVC.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace DateflixMVC.Controllers.API
 {
@@ -23,14 +19,12 @@ namespace DateflixMVC.Controllers.API
     {
         private IUserService _userService;
         private IMapper _mapper;
-        private readonly AppSettings _appSettings;
         private IHostingEnvironment _hostingEnvironment;
 
-        public UsersController(IUserService userService, IMapper mapper, IOptions<AppSettings> appSettings, IHostingEnvironment hostingEnvironment)
+        public UsersController(IUserService userService, IMapper mapper, IHostingEnvironment hostingEnvironment)
         {
             _userService = userService;
             _mapper = mapper;
-            _appSettings = appSettings.Value;
             _hostingEnvironment = hostingEnvironment;
         }
 

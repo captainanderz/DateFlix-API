@@ -41,7 +41,6 @@ namespace DateflixMVC.Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            //var userAndRolesClaims = new List<Claim>
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(GetUserClaims(user)),
@@ -50,7 +49,7 @@ namespace DateflixMVC.Services
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature
                 ),
-                Expires = DateTime.UtcNow.AddMinutes(1)
+                Expires = DateTime.UtcNow.AddMonths(1)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
