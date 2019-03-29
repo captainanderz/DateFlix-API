@@ -61,7 +61,7 @@ namespace DateflixMVC.Hubs
             await _messageService.SaveMessage(email, receiverEmail, message);
         }
 
-        public List<MessageDto> GetMessages(string senderEmail, string senderConnectionId, string receiverEmail)
+        public List<MessageDto> GetMessages(string senderEmail, string receiverEmail)
         {
             var messages = _messageService.GetMessages(senderEmail, receiverEmail);
             return messages;
@@ -72,15 +72,9 @@ namespace DateflixMVC.Hubs
             return Context.ConnectionId;
         }
 
-        public string GetConnectionIdFromEmail(string email, string senderConnectionId = null)
+        public string GetConnectionIdFromEmail(string email)
         {
             var user = ConnectedUsers.FirstOrDefault(x => x.Email == email);
-            if (user?.Email != null && senderConnectionId != null)
-            {
-                Clients.Clients(senderConnectionId)
-                    .SendCoreAsync("ReceiveConnectionIdFromEmail", new object[] { user.ConnectionId });
-            }
-
             return user?.ConnectionId;
         }
     }
