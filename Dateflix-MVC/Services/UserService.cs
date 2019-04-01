@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
@@ -19,11 +20,13 @@ namespace DateflixMVC.Services
     {
         private WebApiDbContext _context;
         private readonly AppSettings _appSettings;
+        private IMapper _mapper;
 
-        public UserService(WebApiDbContext context, IOptions<AppSettings> appSettings)
+        public UserService(WebApiDbContext context, IOptions<AppSettings> appSettings, IMapper mapper)
         {
             _context = context;
             _appSettings = appSettings.Value;
+            _mapper = mapper;
         }
 
         public UserDto Authenticate(string email, string password)
@@ -31,7 +34,7 @@ namespace DateflixMVC.Services
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
                 return null;
 
-            var user = _context.Users.Include(x => x.Roles).ThenInclude(x => x.Role).SingleOrDefault(u => u.Email == email);
+            var user = GetByEmail(email);
 
             if (user == null)
                 return null;
@@ -54,15 +57,8 @@ namespace DateflixMVC.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
-            
-            return new UserDto()
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Token = tokenString
-            };
+
+            return _mapper.Map<User, UserDto>(user);
         }
 
         public User Create(User user, string password)
