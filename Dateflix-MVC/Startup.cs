@@ -114,7 +114,7 @@ namespace DateflixMVC
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=login}/{action=Index}/{id?}");
+                    template: "{controller=PrivateChat}/{action=TestTwo}/{id?}");
                 routes.MapSpaFallbackRoute(
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });

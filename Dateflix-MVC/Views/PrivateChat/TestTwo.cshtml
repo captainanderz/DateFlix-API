@@ -67,7 +67,7 @@
         });
 
         $('#getMessages').click(async function() {
-            var messages = await connection.invoke("GetMessages", email, connectionId, $("#frndUsername").val());
+            var messages = await connection.invoke("GetMessages", email, $("#frndUsername").val());
 
             console.log(messages.val);
             messages.forEach(function (message) {

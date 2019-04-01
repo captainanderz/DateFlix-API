@@ -7,7 +7,7 @@ namespace DateflixMVC.Services
 {
     public interface IMessageService
     {
-        List<MessageDto> GetMessages(string senderEmail, string receiverEmail, string senderId = null, string receiverId = null);
+        List<MessageDto> GetMessages(string senderEmail, string receiverEmail);
         Task SaveMessage(string senderEmail, string receiverEmail, string message);
         Task SaveMessage(User sender, int receiverId, string message);
     }
