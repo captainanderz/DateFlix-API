@@ -28,7 +28,9 @@ namespace DateflixMVC.Controllers.API
             _inquiryService = inquiryService;
         }
 
-        public IActionResult Test()
+        [HttpGet("GetAll")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult GetInquiries()
         {
             return Ok(_context.Inquiries.ToList());
         }
@@ -66,6 +68,7 @@ namespace DateflixMVC.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult DeleteInquiry(int id)
         {
             var inquiry = _inquiryService.GetById(id); // Fetch inquiry by id
