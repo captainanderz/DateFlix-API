@@ -131,11 +131,8 @@ namespace DateflixMVC.Controllers.API
         }
 
         [HttpGet("downloadprofilepicture")]
-        public async Task<IActionResult> DownloadProfilePicture(int userId, [FromBody]UserDto userDto)
+        public async Task<IActionResult> DownloadProfilePicture([FromBody]UserDto userDto)
         {
-            var user = _userService.GetById(userId);
-            user.Id = userId;
-
             var picturePath = userDto.ProfilePictures[0];
             var memory = new MemoryStream();
             using (var stream = new FileStream(picturePath, FileMode.Open))

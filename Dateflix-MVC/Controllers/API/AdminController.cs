@@ -6,27 +6,24 @@ using AutoMapper;
 using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
 using DateflixMVC.Models;
-using DateflixMVC.Models.Profile;
-using DateflixMVC.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DateflixMVC.Controllers.API
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
     {
         private readonly WebApiDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IUserService _userService;
 
-        public AdminController(WebApiDbContext context, IMapper mapper, IUserService userService)
+        public AdminController(WebApiDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _userService = userService;
         }
 
         [HttpGet("GetAll")]
