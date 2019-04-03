@@ -1,5 +1,7 @@
+using System.Linq;
 using AutoMapper;
 using DateflixMVC.Dtos;
+using DateflixMVC.Helpers;
 using DateflixMVC.Models.Profile;
 using DateflixMVC.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +15,13 @@ namespace DateflixMVC.Controllers.API
     public class InquiriesController : Controller
     {
         private readonly IMapper _mapper;
+        private readonly WebApiDbContext _context;
         private readonly IInquiryService _inquiryService;
 
-        public InquiriesController(IMapper mapper, IInquiryService inquiryService)
+        public InquiriesController(IMapper mapper, WebApiDbContext context, IInquiryService inquiryService)
         {
             _mapper = mapper;
+            _context = context;
             _inquiryService = inquiryService;
         }
 
