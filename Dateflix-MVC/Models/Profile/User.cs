@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DateflixMVC.Dtos;
 using DateflixMVC.Helpers;
@@ -20,6 +20,7 @@ namespace DateflixMVC.Models.Profile
         public string[] ProfilePictures { get; set; }
         public string City { get; set; }
         public Gender Gender { get; set; }
+        public string Token { get; set; }
         public string Description { get; set; }
         public List<Inquiries> Inquiries { get; set; }
         public List<Blocks> Blocks { get; set; }

@@ -20,7 +20,14 @@ namespace DateflixMVC.Controllers.API
             _mapper = mapper;
             _inquiryService = inquiryService;
         }
-        
+
+        [HttpGet("GetAll")]
+        [Authorize(Roles = "Administrator")]
+        public IActionResult GetInquiries()
+        {
+            return Ok(_context.Inquiries.ToList());
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetInquiryById(int id)
         {
@@ -54,6 +61,7 @@ namespace DateflixMVC.Controllers.API
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public IActionResult DeleteInquiry(int id)
         {
             var inquiry = _inquiryService.GetById(id); // Fetch inquiry by id

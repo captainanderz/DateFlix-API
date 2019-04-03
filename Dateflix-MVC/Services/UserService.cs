@@ -57,7 +57,7 @@ namespace DateflixMVC.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
-
+            user.Token = tokenString;
             return _mapper.Map<User, UserDto>(user);
         }
 
