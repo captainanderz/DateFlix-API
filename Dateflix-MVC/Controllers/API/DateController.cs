@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DateflixMVC.Controllers.API
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DateController : ControllerBase
@@ -71,12 +71,8 @@ namespace DateflixMVC.Controllers.API
                 return Ok("Existing match");
             }
 
-            var duplicate = _context.Likes.Where(x => x.UserId == likeDto.UserId && x.LikedId == likeDto.LikedId);
-            // The like already exists
-            if (duplicate.Count() > 0)
-                return Ok("Duplicate");
-
             var matchHappened = _context.Likes.SingleOrDefault(x => x.UserId == likeDto.LikedId && x.LikedId == likeDto.UserId);
+
             // If match occours, add new match and like
             if (matchHappened != null)
             { 
