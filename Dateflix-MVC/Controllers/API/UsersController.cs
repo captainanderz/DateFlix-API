@@ -155,7 +155,6 @@ namespace DateflixMVC.Controllers.API
         }
 
         [HttpDelete("{userId}")]
-        [Authorize(Roles = "Administrator")]
         public IActionResult Delete(int userId)
         {
             _userService.Delete(userId);
