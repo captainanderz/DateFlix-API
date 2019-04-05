@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace DateflixMVC.Controllers.API
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DateController : ControllerBase
