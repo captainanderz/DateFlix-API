@@ -66,7 +66,8 @@ namespace DateflixMVC.Controllers.API
             var existingMatch = _context.Matches.Where(x => x.UserOneId == likeDto.UserId && x.UserTwoId == likeDto.LikedId
             || x.UserTwoId == likeDto.LikedId && x.UserOneId == likeDto.UserId);
 
-            if (existingMatch.Any()) // If match already exists
+            // If match already exists
+            if (existingMatch.Any())
             {
                 return Ok("Existing match");
             }
@@ -82,7 +83,6 @@ namespace DateflixMVC.Controllers.API
                 return Ok("Match happened!");
             }
 
-            var likesEntry = _context.Likes.Add(_mapper.Map<Likes>(likeDto));
             _context.SaveChanges();
             return Ok("Like recorded");
         }

@@ -62,8 +62,8 @@
                 + '</strong>: ' + htmlEncode($('#message').val()) + '</li>');
             $('#message').val('').focus();
 
-            var friendConnectionId = connection.invoke("GetConnectionIdFromEmail", $("#frndConnId").val(), null);
-            $('#frndConnId').val(friendConnectionId);
+            //var friendConnectionId = connection.invoke("GetConnectionIdFromEmail", $("#frndConnId").val(), null);
+            //$('#frndConnId').val(friendConnectionId);
         });
 
         $('#getMessages').click(async function() {
