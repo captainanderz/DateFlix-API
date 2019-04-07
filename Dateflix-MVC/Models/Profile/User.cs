@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using DateflixMVC.Dtos;
-using DateflixMVC.Helpers;
 
 namespace DateflixMVC.Models.Profile
 {

@@ -50,7 +50,7 @@ namespace DateflixMVC.Controllers.API
             var user = _userService.Create(mappedUser, userDto.Password);
             if (user == null)
                 return BadRequest();
-            return Ok(user);
+            return Ok(_mapper.Map<UserDto>(user));
         }
 
 
